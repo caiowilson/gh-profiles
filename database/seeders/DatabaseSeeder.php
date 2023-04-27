@@ -15,6 +15,7 @@ class DatabaseSeeder extends Seeder
         $this->call([
             // WithoutModelEvents::class,
             AdminUserSeeder::class,
+            // GhDefaultUsersSeeder::class,
             // AdminUserSeeder::class,
             // CategorySeeder::class,
             // ProductSeeder::class,
