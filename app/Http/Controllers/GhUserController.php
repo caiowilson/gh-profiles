@@ -6,7 +6,6 @@ use App\Http\Services\GitHubService;
 use App\Models\GhUser;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Facades\Validator;
 use Inertia\Inertia;
 
 class GhUserController extends Controller
@@ -27,15 +26,15 @@ class GhUserController extends Controller
     public function store(Request $request)
 
     {
+        //situação não deveria acontecer, mas é melhor prevenir
         if (GhUser::where('login', $request->login)->exists()) {
             return redirect()->back()->with('error', 'User already exists');
         }
 
         $user = GitHubService::getCachedUser($request->login);
-        $user['gh_id'] = $user['id'];//save githug id as gh_id
+        $user['gh_id'] = $user['id'];//salva github id como gh_id
         unset($user['id']);
 
-        //TODO: salvar os repositorios do usuario no banco e manejar o cache
         if(GhUser::create($user)){
             return redirect()->back()->with('success', 'User added successfully', compact('user'));
         }
@@ -50,7 +49,6 @@ class GhUserController extends Controller
             $user = GitHubService::getCachedUser($login);
         } else {
             $user = GhUser::where('login', $login)->first();
-
         }
         $repos = Http::get("https://api.github.com/users/$login/repos")->json();
         return Inertia::render('GhUsers/Show', [
